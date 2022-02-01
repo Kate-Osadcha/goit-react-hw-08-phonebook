@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 import AddContactButton from '../AddContactButton';
 
@@ -10,7 +11,7 @@ const initialState = {
   number: '',
 };
 
-const ContactForm = ({ contacts, onSubmit }) => {
+const ContactForm = ({ contacts, isLoading, onSubmit }) => {
   const [state, setState] = useState(initialState);
   const { name, number } = state;
 
@@ -38,12 +39,14 @@ const ContactForm = ({ contacts, onSubmit }) => {
       contact => contact.number === number,
     );
 
-    // Отправка данных после проверки в экшн
+    // Отправка данных после проверки
     if (!nameInContacts && !numberInContacts) {
       onSubmit(normalizedName, number);
       resetForm();
       return;
     }
+
+    toast.info(`${name} is already in contacts`);
   };
 
   const resetForm = () => {
@@ -66,6 +69,7 @@ const ContactForm = ({ contacts, onSubmit }) => {
             onChange={hanldeChange}
             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
             title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+            disabled={isLoading}
             required
           />
         </label>
@@ -82,6 +86,7 @@ const ContactForm = ({ contacts, onSubmit }) => {
             onChange={hanldeChange}
             pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
             title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
+            disabled={isLoading}
             required
           />
         </label>
@@ -93,6 +98,14 @@ const ContactForm = ({ contacts, onSubmit }) => {
 };
 
 ContactForm.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    }),
+  ),
+  isLoading: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 

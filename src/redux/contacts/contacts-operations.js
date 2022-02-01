@@ -1,18 +1,3 @@
-// import { createAsyncThunk } from '@reduxjs/toolkit';
-// import * as phonebookAPI from './../../services/phonebook-api';
-
-// export const fetchContacts = createAsyncThunk(
-//   '/contacts/fetchContacts',
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const contacts = await phonebookAPI.fetchContacts();
-//       return contacts;
-//     } catch (error) {
-//       return rejectWithValue(error);
-//     }
-//   },
-// );
-
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -28,7 +13,7 @@ const fetchContacts = () => async dispatch => {
 
     dispatch(actions.fetchContactsSuccess(data));
   } catch (error) {
-    dispatch(actions.fetchContactsError(error));
+    dispatch(actions.fetchContactsError(error.message));
     toast.error(error.message);
   }
 };
@@ -41,9 +26,10 @@ const addContact = (name, number) => async dispatch => {
   try {
     const { data } = await axios.post('/contacts', contact);
 
+    toast.success('Added');
     dispatch(actions.addContactSuccess(data));
   } catch (error) {
-    dispatch(actions.addContactError(error));
+    dispatch(actions.addContactError(error.message));
     toast.error(error.message);
   }
 };
@@ -54,9 +40,10 @@ const deleteContact = id => async dispatch => {
   try {
     await axios.delete(`/contacts/${id}`);
 
+    toast.success('Deleted');
     dispatch(actions.deleteContactSuccess(id));
   } catch (error) {
-    dispatch(actions.deleteContactError(error));
+    dispatch(actions.deleteContactError(error.message));
     toast.error(error.message);
   }
 };

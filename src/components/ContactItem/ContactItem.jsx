@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import IconButton from '../IconButton';
 import { ReactComponent as DeleteIcon } from '../../icons/delete.svg';
 import s from './ContactItem.module.scss';
@@ -15,6 +17,15 @@ const ContactItem = ({ contact, onDeleteContact }) => {
       </IconButton>
     </li>
   );
+};
+
+ContactItem.propTypes = {
+  contact: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    number: PropTypes.string.isRequired,
+  }),
+  onDeleteContact: PropTypes.func.isRequired,
 };
 
 export default ContactItem;

@@ -1,5 +1,7 @@
+@import 'styles/shared.scss';
+
 body {
-  background-color: #f0f1f3;
+  background-color: $bg-color;
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui,
     helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
   font-style: normal;

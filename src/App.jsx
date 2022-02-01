@@ -1,35 +1,74 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { Suspense, lazy, useEffect } from 'react';
+import { connect } from 'react-redux';
 
-import { contactsOperations, contactsSelectors } from './redux/contacts';
+import { Switch } from 'react-router-dom';
+
+import { ToastContainer } from 'react-toastify';
+
+import routes from './routes';
+import { authOperations } from './redux/auth';
 
 import Container from './components/Container';
-import ContactForm from './components/ContactForm';
-import Filter from './components/Filter';
-import ContactList from './components/ContactList';
+import AppBar from './components/AppBar';
+import AppFooter from './components/AppFooter';
 import Loader from './components/Loader';
+import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
 
-const App = () => {
-  const isLoadingContacts = useSelector(state =>
-    contactsSelectors.getLoading(state),
-  );
+import 'react-toastify/dist/ReactToastify.css';
 
-  const dispatch = useDispatch();
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ContactsPage = lazy(() => import('./pages/ContactsPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const PageNotFound = lazy(() => import('./pages/PageNotFound'));
 
+const App = ({ getCurrentUser }) => {
   useEffect(() => {
-    dispatch(contactsOperations.fetchContacts());
-  }, [dispatch]);
+    getCurrentUser();
+  }, [getCurrentUser]);
+
   return (
     <Container>
-      <ContactForm />
+      <AppBar />
 
-      <Filter />
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <PublicRoute exact path={routes.home} component={HomePage} />
 
-      <ContactList />
+          <PrivateRoute
+            path={routes.contacts}
+            component={ContactsPage}
+            redirectTo={routes.login}
+          />
 
-      {isLoadingContacts && <Loader />}
+          <PublicRoute
+            path={routes.register}
+            component={RegisterPage}
+            restricted
+            redirectTo={routes.contacts}
+          />
+
+          <PublicRoute
+            path={routes.login}
+            component={LoginPage}
+            restricted
+            redirectTo={routes.contacts}
+          />
+
+          <PublicRoute component={PageNotFound} />
+        </Switch>
+      </Suspense>
+
+      <AppFooter />
+
+      <ToastContainer autoClose={3000} />
     </Container>
   );
 };
 
-export default App;
+const mapDispatchToProps = {
+  getCurrentUser: authOperations.getCurrentUser,
+};
+
+export default connect(null, mapDispatchToProps)(App);

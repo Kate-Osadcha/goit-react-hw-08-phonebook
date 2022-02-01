@@ -5,6 +5,7 @@ import ContactForm from './ContactForm';
 
 const mapStateToProps = state => ({
   contacts: contactsSelectors.getContacts(state),
+  isLoading: contactsSelectors.getLoading(state),
 });
 
 const mapDispatchToProps = dispatch => ({
